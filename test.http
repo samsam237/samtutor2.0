@@ -1,6 +1,35 @@
+### Test d'un chat
 POST http://127.0.0.1:5000/api/chat
 Content-Type: application/json
 
 {
   "message": "je veux apprendre"
 }
+
+### Ajouter des livres
+POST http://localhost:5000/api/add_books
+Content-Type: application/json
+
+{
+  "books": [
+    {
+      "title": "Le Petit Prince",
+      "content": "Voici le texte du Petit Prince, un conte sur l'amour et l'amitié."
+    },
+    {
+      "title": "Les Misérables",
+      "content": "Les Misérables raconte l'histoire de Jean Valjean et de sa quête de rédemption."
+    }
+  ]
+}
+
+### Récupérer un livre pertinent
+POST http://localhost:5000/api/retrieve
+Content-Type: application/json
+
+{
+  "message": "Prince."
+}
+
+### Récupérer tous les livres
+GET http://localhost:5000/api/get_books

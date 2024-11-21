@@ -7,6 +7,7 @@ from langchain_core.runnables import RunnableLambda
 #from langchain_community.llms import Runnable
 #from langchain.runnables import RunnableLambda, Runnable
 import torch
+import requests
 
 bp = Blueprint('chat', __name__)
 
@@ -30,12 +31,12 @@ def generate_text(prompt_text):
     #outputs = model.generate(inputs["input_ids"], max_length=150, num_return_sequences=1)
     outputs = model.generate(
         inputs["input_ids"],
-        max_length=250,  # Augmenter la longueur
+        max_length=1000,  # Augmenter la longueur
         num_return_sequences=1,  # Garder une seule séquence pour l'instant
         do_sample=True,  # Activer la génération échantillonnée
         top_k=50,  # Limiter les tokens choisis
-        top_p=0.95,  # Somme cumulative de probabilité pour la génération
-        temperature=0.7  # Température pour varier les réponses
+        top_p=0.9,  # Somme cumulative de probabilité pour la génération
+        temperature=0.9  # Température pour varier les réponses
     )
 
     # Retourner la réponse générée
@@ -48,6 +49,7 @@ template = """
 Reponds sans reprendre le prompt.
 Tu es un tuteur intelligent. L'étudiant demande : {question}.
 Réponds de manière claire et détaillée avec des exemples pratiques.
+Utilise comme ressource le contenu suivant {content}
 """
 prompt = PromptTemplate(input_variables=["question"], template=template)
 
@@ -58,8 +60,21 @@ llm_chain = LLMChain(prompt=prompt, llm=my_llm) """
 @bp.route('/api/chat', methods=['POST'])
 def chat():
     user_input = request.json.get('message')
-    print (user_input)
     if user_input:
-        response = llm_chain.run(user_input)
-        return jsonify({'response': response}), 200
+        # Appel du service de récupération d'information pour obtenir le livre pertinent
+        response = requests.post(
+            'http://localhost:5000/api/retrieve',
+            json={'message': user_input}
+        )
+        
+        if response.status_code == 200 and response.json().get('relevant_book'):
+            relevant_book = response.json().get('relevant_book')
+            input_data = {
+                "question": user_input,
+                "content": relevant_book
+            }
+            response = llm_chain.run(input_data)
+            return jsonify({'response': response}), 200
+        else:
+            return jsonify({'error': 'Erreur dans la récupération de livre pertinent.'}), 400
     return jsonify({'error': 'No message provided'}), 400
