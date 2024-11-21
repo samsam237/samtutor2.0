@@ -87,3 +87,12 @@ Un backend intelligent pour l’adaptation des contenus et des réponses.
 Un moteur de recherche et de recommandation pour personnaliser l’apprentissage.
 Des systèmes de simulation et de pratique pour l’apprentissage par projet.
 Les technologies modernes comme React, Flask, PyTorch, et Hugging Face permettent de mettre en place ces interfaces de manière fluide et scalable.
+
+
+T5-small	Léger	60 millions	Excellente pour le tutorat pédagogique	Adapté pour des tâches de compréhension et génération de texte. Facile à fine-tuner.	Moins performant que des modèles plus grands pour des tâches complexes.	300 Mo
+T5-base	Moyen	220 millions	Très bon pour la génération de réponses claires et pédagogiques	Très bon compromis pour des réponses détaillées.	Plus lourd que T5-small mais plus performant.	1.2 Go
+GPT-2 Medium	Moyen	355 millions	Très bon pour des dialogues naturels et des explications détaillées	Bonne capacité à générer des dialogues fluides et cohérents.	Plus lourd que distilgpt2 et moins spécialisé en tutorat.	1.5 Go
+BART-base	Moyen	140 millions	Très bon pour des dialogues et résumés pédagogiques	Excellente gestion du contexte et génération de texte cohérent.	Moins léger que GPT-2 Medium mais très puissant pour la compréhension du texte.	1.2 Go
+GPT-Neo 125M	Léger	125 millions	Bon pour des dialogues simples et des explications pédagogiques	Léger et rapide, bonne option pour des réponses basiques.	Moins performant pour des dialogues complexes.	500 Mo
+GPT-J 6B	Lourd	6 milliards	Excellent pour des conversations avancées et des systèmes de tutorat intelligents	Très performant pour des dialogues longs et la gestion de contexte complexe.	Lourd, nécessite plus de ressources GPU/CPU.	24 Go (modèle complet)
+DistilGPT-2	Très léger	82 millions	Moins adapté pour des tutorats complexes mais rapide et efficace pour des réponses simples	Très rapide et léger, bon pour des tâches simples.	Moins performant dans des contextes pédagogiques avancés.	300 Mo
