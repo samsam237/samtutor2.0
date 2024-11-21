@@ -13,7 +13,11 @@ bp = Blueprint('chat', __name__)
 
 #model_name = "EleutherAI/gpt-neo-2.7B"  # Modèle local de Hugging Face
 #model_name = "distilgpt2"
-model_name = "t5-small"
+model_name = "facebook/bart-base"
+#model_name = "gpt2-medium"
+#model_name = "EleutherAI/gpt-neo-125M"
+#model_name = "EleutherAI/gpt-j-6B" 
+#model_name = "t5-small"
 
 # Charger le modèle et le tokenizer avec transformers
 #model = AutoModelForCausalLM.from_pretrained(model_name)
@@ -45,11 +49,11 @@ def generate_text(prompt_text):
 # Envelopper la fonction generate_text dans un "Runnable"
 generate_runnable = RunnableLambda(lambda x, stop=None: generate_text(x))
 
-template = """
-Reponds sans reprendre le prompt.
-Tu es un tuteur intelligent. L'étudiant demande : {question}.
-Réponds de manière claire et détaillée avec des exemples pratiques.
-Utilise comme ressource le contenu suivant {content}
+template = """Tu es un tuteur expert, capable d'expliquer de manière claire et pédagogique. L'étudiant te pose la question suivante : {question}.
+
+Réponds de façon détaillée et structurée, en utilisant des exemples concrets pour rendre ta réponse plus compréhensible. Assure-toi que ton explication soit complète et adaptée au niveau de l'étudiant.
+
+Pour appuyer ta réponse, utilise le contenu suivant : {content} afin de renforcer tes explications et d'offrir un éclairage pertinent sur la question.
 """
 prompt = PromptTemplate(input_variables=["question"], template=template)
 
