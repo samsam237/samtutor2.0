@@ -28,7 +28,7 @@ POST http://localhost:5000/api/retrieve
 Content-Type: application/json
 
 {
-  "message": "Prince."
+  "message": "l'amour"
 }
 
 ### Récupérer tous les livres

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoTur 2.0</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .switch {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .switch button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            background-color: #3498db;
+            border-radius: 5px;
+        }
+
+        .switch button.active {
+            background-color: #2980b9;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Chat Section */
+        #chatContainer {
+            display: flex;
+            flex-direction: column;
+            height: 60vh;
+            padding: 10px;
+            overflow-y: auto;
+            background-color: #eef2f5;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        .message.user {
+            background-color: #3498db;
+            color: white;
+            align-self: flex-end;Q
+        }
+
+        .message.bot {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            align-self: flex-start;
+        }
+
+        #chatInputContainer {
+            display: flex;
+            padding: 10px;
+            background-color: white;
+            border-top: 1px solid #ccc;
+        }
+
+        #chatInput {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #sendButton {
+            padding: 10px 20px;
+            margin-left: 10px;
+            font-size: 16px;
+            color: white;
+            background-color: #3498db;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #sendButton:hover {
+            background-color: #2980b9;
+        }
+
+        /* Admin Section */
+        #admin {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        input[type="file"], table {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        button.send {
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            background-color: #3498db;
+            border-radius: 5px;
+            background-color: #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <header>AutoTur 2.0</header>
+    <div class="container">
+        <div class="switch">
+            <button id="btnChat" class="active">Chat</button>
+            <button id="btnAdmin">Admin</button>
+        </div>
+
+        <div id="chat" class="section active">
+            <div id="chatContainer"></div>
+            <div id="chatInputContainer">
+                <input type="text" id="chatInput" placeholder="Entrez votre message...">
+                <button id="sendButton">Envoyer</button>
+            </div>
+        </div>
+
+        <div id="admin" class="section">
+            <h2>Admin</h2>
+            <label for="fileInput">Choisir un fichier :</label>
+            <input type="file" id="fileInput">
+            <button class="send">Envoyer à l'API</button>
+
+            <h3>Liste des documents récupérés</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Contenu</th>
+                    </tr>
+                </thead>
+                <tbody id="documentsTable">
+                    <!-- Les documents apparaîtront ici -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const btnChat = document.getElementById('btnChat');
+        const btnAdmin = document.getElementById('btnAdmin');
+        const chatSection = document.getElementById('chat');
+        const adminSection = document.getElementById('admin');
+        const documentsTable = document.getElementById('documentsTable');
+
+        // Switch sections
+        btnChat.addEventListener('click', () => {
+            chatSection.classList.add('active');
+            adminSection.classList.remove('active');
+            btnChat.classList.add('active');
+            btnAdmin.classList.remove('active');
+        });
+
+        btnAdmin.addEventListener('click', () => {
+            adminSection.classList.add('active');
+            chatSection.classList.remove('active');
+            btnAdmin.classList.add('active');
+            btnChat.classList.remove('active');
+        });
+
+        // Chatbot logic
+        const chatContainer = document.getElementById('chatContainer');
+        const chatInput = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendButton');
+
+        function addMessage(text, sender) {
+            const message = document.createElement('div');
+            message.className = `message ${sender}`;
+            message.textContent = text;
+            chatContainer.appendChild(message);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function getBotResponse(userMessage) {
+            if (userMessage.toLowerCase().includes("bonjour")) {
+                return "Bonjour ! Comment puis-je vous aider ?";
+            } else if (userMessage.toLowerCase().includes("aide")) {
+                return "Je suis ici pour vous aider. Posez-moi une question !";
+            } else {
+                return "Je ne comprends pas. Pouvez-vous reformuler ?";
+            }
+        }
+
+        sendButton.addEventListener('click', () => {
+            const userMessage = chatInput.value.trim();
+            if (userMessage) {
+                addMessage(userMessage, 'user');
+                chatInput.value = '';
+                setTimeout(() => {
+                    const botResponse = getBotResponse(userMessage);
+                    addMessage(botResponse, 'bot');
+                }, 500);
+            }
+        });
+
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+
+        // Admin logic
+        const fileInput = document.getElementById('fileInput');
+        const sendButtonAdmin = document.querySelector('.send');
+
+        sendButtonAdmin.addEventListener('click', () => {
+            const file = fileInput.files[0];
+            if (!file) {
+                alert("Veuillez sélectionner un fichier.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const content = event.target.result;
+                const row = document.createElement('tr');
+                const nameCell = document.createElement('td');
+                const contentCell = document.createElement('td');
+
+                nameCell.textContent = file.name;
+                contentCell.textContent = content.substring(0, 100) + (content.length > 100 ? "..." : "");
+                row.appendChild(nameCell);
+                row.appendChild(contentCell);
+                documentsTable.appendChild(row);
+                fileInput.value="";
+            };
+            reader.readAsText(file);
+        });
+    </script>
+</body>
+</html>
